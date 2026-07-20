@@ -1,7 +1,6 @@
 plugins {
-    id 'eclipse'
-    id 'idea'
-    id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
+    id 'java-library'
+    id 'net.neoforged.moddev.legacyforge' version '2.0.142'
 }
 
 def properties = new Properties()
@@ -19,22 +18,23 @@ java {
     toolchain.languageVersion = JavaLanguageVersion.of(17)
 }
 
-minecraft {
-    mappings channel: 'official', version: forge_minecraft_version
-    copyIdeResources = true
+legacyForge {
+    version = "${forge_minecraft_version}-${forge_version}"
+    validateAccessTransformers = true
 
     runs {
-        configureEach {
-            workingDirectory project.file('run')
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
+        client {
+            client()
         }
-        client {}
         server {
-            args '--nogui'
+            server()
+            programArgument '--nogui'
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
         }
     }
 }
@@ -44,8 +44,11 @@ sourceSets.main.output.dir(
         builtBy: ':common:classes'
 )
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
-    minecraft "net.minecraftforge:forge:${forge_minecraft_version}-${forge_version}"
     implementation project(':common')
 }
 
@@ -68,11 +71,6 @@ tasks.named('processResources', ProcessResources).configure {
     }
 }
 
-tasks.named('jar', Jar).configure {
-    finalizedBy 'reobfJar'
-}
-
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
-

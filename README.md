@@ -33,3 +33,6 @@
 - `common/`: 不依赖 Minecraft 或任意 loader 的共享 Java 代码。
 - `targets/*`: loader 和版本专属入口、metadata、资源及 API 适配。
 
+## 版本参考
+
+- [Minecraft 1.20.1、1.21.1、26.1 完整迁移差异参考](docs/version-differences/README.md)
