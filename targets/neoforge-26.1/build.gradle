@@ -1,10 +1,12 @@
 plugins {
     id 'java-library'
     id 'net.neoforged.moddev' version '2.0.141'
+    id 'me.modmuss50.mod-publish-plugin' version '2.1.1'
 }
 
 def properties = new Properties()
 file('../../gradle.properties').withInputStream { properties.load(it) }
+file('gradle.properties').withInputStream { properties.load(it) }
 properties.each { key, value -> ext.set(key.toString(), value.toString()) }
 
 group = mod_group_id

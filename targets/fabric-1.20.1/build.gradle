@@ -6,14 +6,17 @@ buildscript {
     }
     dependencies {
         classpath 'net.fabricmc:fabric-loom:1.10.5'
+        classpath 'me.modmuss50:mod-publish-plugin:2.1.1'
     }
 }
 
 apply plugin: 'fabric-loom'
 apply plugin: 'java'
+apply plugin: 'me.modmuss50.mod-publish-plugin'
 
 def properties = new Properties()
 file('../../gradle.properties').withInputStream { properties.load(it) }
+file('gradle.properties').withInputStream { properties.load(it) }
 properties.each { key, value -> ext.set(key.toString(), value.toString()) }
 
 group = mod_group_id
