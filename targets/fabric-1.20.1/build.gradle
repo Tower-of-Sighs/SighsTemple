@@ -65,3 +65,4 @@ tasks.withType(JavaCompile).configureEach {
     options.release = 17
 }
 
+apply from: file('../../gradle/target-conventions/publish.gradle')

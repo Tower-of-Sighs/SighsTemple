@@ -74,3 +74,5 @@ tasks.named('processResources', ProcessResources).configure {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
+
+apply from: file('../../gradle/target-conventions/publish.gradle')

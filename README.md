@@ -36,3 +36,4 @@
 ## 版本参考
 
 - [Minecraft 1.20.1、1.21.1、26.1 完整迁移差异参考](docs/version-differences/README.md)
+- [多版本日常维护工作流](docs/MAINTENANCE_WORKFLOW.md)
