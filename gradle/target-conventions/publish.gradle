@@ -11,6 +11,8 @@ dependencies {
     implementation fileTree(dir: file('libs'), include: ['*.jar'], exclude: ['*-sources.jar', '*-javadoc.jar'])
 }
 
+sourceSets.main.resources.srcDir project(':common').file('src/main/resources')
+
 def publishLoader = project.projectDir.name.tokenize('-').first()
 def publishMinecraftVersion = [
         forge    : providers.gradleProperty('forge_minecraft_version'),

@@ -33,6 +33,12 @@
 - `common/`: 不依赖 Minecraft 或任意 loader 的共享 Java 代码。
 - `targets/*`: loader 和版本专属入口、metadata、资源及 API 适配。
 
+## 共享资源
+
+将所有加载器和版本共用的资源放在 `common/src/main/resources/`。构建任意 target 时，该目录会与 target 自己的 `src/main/resources/` 合并并写入最终 jar。
+
+加载器 metadata 仍必须保留在 target 中：Fabric 使用 `fabric.mod.json`，Forge 使用 `META-INF/mods.toml`，NeoForge 使用 `META-INF/neoforge.mods.toml`。
+
 ## 本地依赖
 
 每个 target 都会自动将自身 `libs/` 目录中的 `*.jar` 作为 `implementation` 依赖。将 jar 放入对应目录后不需要在 `build.gradle` 中逐条声明；`*-sources.jar` 和 `*-javadoc.jar` 会被忽略。
