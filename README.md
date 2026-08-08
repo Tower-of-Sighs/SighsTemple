@@ -41,7 +41,7 @@
 
 ## 本地依赖
 
-每个 target 都会自动将自身 `libs/` 目录中的 `*.jar` 作为 `implementation` 依赖。将 jar 放入对应目录后不需要在 `build.gradle` 中逐条声明；`*-sources.jar` 和 `*-javadoc.jar` 会被忽略。
+每个 target 都会自动将自身 `libs/` 目录中的 `*.jar` 作为 `implementation` 依赖。这个规则由 KTS 预编译约定插件统一配置，将 jar 放入对应目录后不需要在 `build.gradle.kts` 中逐条声明；`*-sources.jar` 和 `*-javadoc.jar` 会被忽略。
 
 ```text
 targets/forge-1.20.1/libs/
