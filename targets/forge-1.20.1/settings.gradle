@@ -7,7 +7,6 @@ pluginManagement {
 }
 
 rootProject.name = 'SighsTemple-forge-1.20.1'
-includeBuild('../../common')
 
 include 'common'
 project(':common').projectDir = file('../../common')
