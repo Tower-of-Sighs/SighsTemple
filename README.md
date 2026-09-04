@@ -4,6 +4,10 @@
 
 默认包名与 Gradle group 为 `cc.sighs.temple`，默认 mod id 为 `temple`。
 
+快速迁移请对 AI 这么说：
+
+“使用https://github.com/Tower-of-Sighs/SighsTemple框架来重构本项目，第一步先将当前mc版本的所有源码及资源迁移至common部分，第二步将明确查询源码证实了存在明显版本差异的内容转移到targets中的对应版本下，第三步搭建spi模式，将targets中的内容抽象化，只保留具体实现差异，共通逻辑迁移回common部分，第四步将当前targets下的主版本内容移植到全部所有版本。”
+
 ## IDEA
 
 直接打开任意 `targets/<loader>-<version>/` 目录。IDEA 会导入当前 target 与可编辑的 `../../common` 源码模块，只下载该 target 的加载器和 Minecraft 依赖。
