@@ -1,16 +1,52 @@
+// Standalone build for the shared source tree.
+//
+// common/ holds every piece of code that has no confirmed loader/version
+// difference. It MAY reference Minecraft and loader types: the split rule is
+// "a confirmed version difference", not "platform independence". It compiles
+// against the same legacyforge classpath as targets/forge-1.20.1, so it can be
+// built and tested on its own:
+//
+//     gradlew -p common build
+//
+// Targets do NOT include this as a Gradle subproject. They compile these same
+// sources into their own source set through `prepareCommonSources` (see each
+// target's build.gradle), and that task is also where a target excludes the
+// common files that do have a version difference.
 plugins {
     id 'java-library'
+    id 'net.neoforged.moddev.legacyforge' version '2.0.91'
 }
 
-group = 'cc.sighs.temple'
-version = '1.0.0-SNAPSHOT'
+def properties = new Properties()
+file('../gradle.properties').withInputStream { properties.load(it) }
+file('gradle.properties').withInputStream { properties.load(it) }
+properties.each { key, value -> ext.set(key.toString(), value.toString()) }
+
+group = mod_group_id
+version = mod_version
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
+}
+
+legacyForge {
+    version = "${forge_minecraft_version}-${forge_version}"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
+tasks.named('test', Test).configure {
+    useJUnitPlatform()
+}

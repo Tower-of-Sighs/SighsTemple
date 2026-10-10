@@ -10,32 +10,44 @@
 
 ## IDEA
 
-直接打开任意 `targets/<loader>-<version>/` 目录。IDEA 会导入当前 target 与可编辑的 `../../common` 源码模块，只下载该 target 的加载器和 Minecraft 依赖。
+直接打开任意 `targets/<loader>-<version>/` 目录。IDEA 会导入当前 target，并把 `../../common` 作为 composite build 的独立可编辑模块一起导入，只下载该 target 的加载器和 Minecraft 依赖。
 
 ## Target
 
-| Target | JDK | 构建命令 |
+| Target | Gradle JVM | 构建命令 |
 | --- | --- | --- |
 | `forge-1.20.1` | JDK 21 | `targets\forge-1.20.1\.\gradlew.bat clean build` |
-| `fabric-1.20.1` | JDK 21 | `targets\fabric-1.20.1\.\gradlew.bat clean build` |
+| `forge-1.19.2` | JDK 21 | `targets\forge-1.19.2\.\gradlew.bat clean build` |
+| `forge-1.18.2` | JDK 21 | `targets\forge-1.18.2\.\gradlew.bat clean build` |
+| `fabric-1.20.1` | JDK 17 | `targets\fabric-1.20.1\.\gradlew.bat clean build` |
+| `fabric-1.21.1` | JDK 21 | `targets\fabric-1.21.1\.\gradlew.bat clean build` |
+| `fabric-26.1` | JDK 25 | `targets\fabric-26.1\.\gradlew.bat clean build` |
 | `neoforge-1.21.1` | JDK 21 | `targets\neoforge-1.21.1\.\gradlew.bat clean build` |
 | `neoforge-26.1` | JDK 25 | `targets\neoforge-26.1\.\gradlew.bat clean build` |
 
-根项目默认只同步 `common`。使用 JDK 21 时可选择性构建前三个 target：
+根项目默认只同步 `common`。使用 JDK 21 时可选择性构建全部 JDK 21 target：
 
 ```powershell
 .\gradlew.bat '-Ptarget=forge-1.20.1' build
 .\gradlew.bat '-Ptarget=fabric-1.20.1' build
-.\gradlew.bat '-Ptarget=neoforge-1.21.1' build
 .\gradlew.bat -PallTargets=true build
 ```
 
-`neoforge-26.1` 因 JDK 25 要求独立构建。
+`fabric-26.1` 与 `neoforge-26.1` 因 JDK 25 与 Gradle 9 要求独立构建。
 
 ## 结构
 
-- `common/`: 不依赖 Minecraft 或任意 loader 的共享 Java 代码。
+- `common/`: 所有没有确证版本差异的共享代码与共享资源，可以引用 Minecraft 与 loader 类型。
 - `targets/*`: loader 和版本专属入口、metadata、资源及 API 适配。
+- `gradle/target-conventions/publish.gradle`: 所有 target 共用的发布约定。
+
+每个 target 通过 source-set sharing 把 `../../common/src/main/java`（由 `prepareCommonSources` 同步到生成目录）直接编译进自己的源码集，因此 `common` 既能在任意 target 内被独立编辑，也能单独构建：
+
+```powershell
+.\gradlew.bat -p common build
+```
+
+经源码确证在某个 target 上存在版本差异的 common 文件，在该 target 的 `prepareCommonSources` 中 `exclude` 对应路径，并由该 target 提供自己的实现。
 
 ## 共享资源
 
@@ -49,7 +61,11 @@
 
 ```text
 targets/forge-1.20.1/libs/
+targets/forge-1.19.2/libs/
+targets/forge-1.18.2/libs/
 targets/fabric-1.20.1/libs/
+targets/fabric-1.21.1/libs/
+targets/fabric-26.1/libs/
 targets/neoforge-1.21.1/libs/
 targets/neoforge-26.1/libs/
 ```
@@ -78,7 +94,10 @@ cd targets\forge-1.20.1
 
 将目录替换为其他 target 即可单独发布对应加载器和 Minecraft 版本。Fabric 会上传重映射后的 jar；Forge 与 NeoForge 上传各自的最终 jar。
 
+`publish` 任务会把 target 的 Java component 发布到 Sighs Maven 仓库，细节见 [Publishing](docs/PUBLISHING.md)。
+
 ## 版本参考
 
 - [Minecraft 1.20.1、1.21.1、26.1 完整迁移差异参考](docs/version-differences/README.md)
 - [多版本日常维护工作流](docs/MAINTENANCE_WORKFLOW.md)
+- [Target CI 自动发现](docs/CI_TARGET_DISCOVERY.md)

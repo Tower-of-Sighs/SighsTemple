@@ -19,7 +19,7 @@ Set `ci.enabled=false` only for a deliberately archived or temporarily unsupport
 
 ## Adding A Target
 
-1. Add `targets/<name>/` as an independent Gradle project with its own wrapper and a source mapping to `../../common`.
+1. Add `targets/<name>/` as an independent Gradle project with its own wrapper. Wire in `common` through a composite build plus source-set sharing: `includeBuild('../../common')` in `settings.gradle`, add `../../common/src/main/java` to the main source set and `../../common/src/test/` to the test source set. Do not add a `project(':common')` dependency.
 2. Add `ci.properties`, choosing the JDK required by that target.
 3. Run `scripts/discover-targets.ps1` from the repository root and confirm the new target appears in the JSON matrix.
 4. Build that target locally with `scripts/build-target.ps1 -Target <name>` using the declared JDK.

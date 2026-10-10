@@ -10,7 +10,11 @@
 ## Affected Targets
 
 - [ ] Forge 1.20.1
+- [ ] Forge 1.19.2
+- [ ] Forge 1.18.2
 - [ ] Fabric 1.20.1
+- [ ] Fabric 1.21.1
+- [ ] Fabric 26.1
 - [ ] NeoForge 1.21.1
 - [ ] NeoForge 26.1
 - [ ] `common`

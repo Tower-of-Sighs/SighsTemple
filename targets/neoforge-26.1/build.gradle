@@ -18,6 +18,38 @@ base {
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(25)
+    withSourcesJar()
+}
+
+// common/ is a shared source tree that also compiles standalone
+// (`gradlew -p common build`, see common/build.gradle). Everything without a
+// confirmed version difference lives there, so its sources are compiled into
+// this target by source-set sharing. Its shared resources directory is wired in
+// by gradle/target-conventions/publish.gradle.
+sourceSets {
+    main {
+        java.srcDir "$buildDir/generated/common-main"
+    }
+    test {
+        java.srcDir '../../common/src/test/java'
+        resources.srcDir '../../common/src/test/resources'
+    }
+}
+
+tasks.register('prepareCommonSources', Sync) {
+    from('../../common/src/main/java') {
+        // This target's version differences are registered here: exclude one
+        // path per common file that this target replaces with its own
+        // implementation, for example
+        //     exclude 'com/example/network/ChunkPacket.java'
+        // Everything not listed here stays shared with every other target.
+    }
+    into "$buildDir/generated/common-main"
+}
+tasks.named('compileJava').configure { dependsOn 'prepareCommonSources' }
+tasks.named('sourcesJar', Jar).configure {
+    dependsOn 'prepareCommonSources'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 neoForge {
@@ -26,7 +58,9 @@ neoForge {
     runs {
         client {
             client()
+            gameDirectory = file('run')
         }
+
         server {
             server()
             programArgument '--nogui'
@@ -40,21 +74,30 @@ neoForge {
     }
 }
 
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
 dependencies {
-    implementation project(':common')
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.11.4'
+    testImplementation 'com.google.code.gson:gson:2.10.1'
 }
 
 tasks.named('processResources', ProcessResources).configure {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     def replaceProperties = [
-            minecraft_version: neoforge_261_minecraft_version,
-            neoforge_version: neoforge_261_version,
+            minecraft_version     : neoforge_261_minecraft_version,
+            neoforge_version      : neoforge_261_version,
             neoforge_version_range: neoforge_261_version_range,
-            mod_id: mod_id,
-            mod_name: mod_name,
-            mod_license: mod_license,
-            mod_version: mod_version,
-            mod_authors: mod_authors,
-            mod_description: mod_description
+            mod_id                : mod_id,
+            mod_name              : mod_name,
+            mod_license           : mod_license,
+            mod_version           : mod_version,
+            mod_authors           : mod_authors,
+            mod_description       : mod_description
     ]
     inputs.properties replaceProperties
     filesMatching('META-INF/neoforge.mods.toml') {
@@ -62,12 +105,12 @@ tasks.named('processResources', ProcessResources).configure {
     }
 }
 
-tasks.named('jar', Jar).configure {
-    from project(':common').sourceSets.main.output
-}
-
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+}
+
+tasks.named('test', Test).configure {
+    useJUnitPlatform()
 }
 
 apply from: file('../../gradle/target-conventions/publish.gradle')
