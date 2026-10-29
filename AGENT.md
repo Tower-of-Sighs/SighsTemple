@@ -44,6 +44,10 @@ gradle/target-conventions/      所有 target 共用的构建约定
 4. 改动资源、metadata、Mixin、注册、事件、网络或渲染时，除构建外必须做相应的运行验证。
 5. 不提交 token、账号、密码、私有仓库凭据、IDE 运行缓存或 `build/` 输出。
 
+### 初始化
+
+新建项目时运行 `scripts/init-project.ps1`，用法见 [README](README.md#初始化新项目)。它一次性替换包路径、主类前缀、mod id、`mod_*` 元数据、共享资源目录和文档中的项目名；初始化之后不要再手工逐文件改名。
+
 ### 构建命令
 
 每个 target 是独立 Gradle 根工程，应在它自己的目录中构建：

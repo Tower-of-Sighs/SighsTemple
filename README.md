@@ -8,6 +8,26 @@
 
 “使用 https://github.com/Tower-of-Sighs/SighsTemple 框架来重构本项目，第一步先将当前mc版本的所有源码及资源迁移至common部分，第二步将明确查询源码证实了存在明显版本差异的内容转移到targets中的对应版本下，第三步搭建spi模式，将targets中的内容抽象化，只保留具体实现差异，共通逻辑迁移回common部分，第四步将当前targets下的主版本内容移植到全部所有版本。”
 
+## 初始化新项目
+
+`scripts/init-project.ps1` 把模板一次性改写成具体项目：包路径、主类名、mod id、`gradle.properties` 的 `mod_*`、metadata 引用、`assets/<mod id>` 与文档中的项目名都会替换。
+
+```powershell
+.\scripts\init-project.ps1 `
+    -ProjectName 'Ember Sanctum' `
+    -Package 'com.example.ember' `
+    -Author 'Zhang San' `
+    -License 'MIT' `
+    -Description '一个示例模组。'
+```
+
+- `ProjectName` 同时用作 `mod_name`、根工程名和主类前缀：`Ember Sanctum` 会得到 `EmberSanctumCommon`、`EmberSanctumForge`、`EmberSanctumFabric`、`EmberSanctumNeoForge121`、`EmberSanctumNeoForge261`。
+- `-ModId` 可省略，默认取 `ProjectName` 去掉非 `[a-z0-9_]` 字符后的小写形式；不合适时显式传入。
+- 省略参数时 PowerShell 会交互提示输入。
+- 脚本只对未初始化的模板运行一次，已初始化会直接报错退出。
+- 作者、简介中的非 ASCII 字符以 `\uXXXX` 写入 `gradle.properties`，因为 Gradle 按 ISO-8859-1 读取 properties。
+- 初始化后旧的 `build/` 产物仍在，执行一次 `clean build` 即可。
+
 ## IDEA
 
 直接打开任意 `targets/<loader>-<version>/` 目录。IDEA 会导入当前 target，并把 `../../common` 作为 composite build 的独立可编辑模块一起导入，只下载该 target 的加载器和 Minecraft 依赖。
